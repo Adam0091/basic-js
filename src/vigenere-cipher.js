@@ -1,79 +1,75 @@
-const CustomError = require("../extensions/custom-error");
+const { NotImplementedError } = require('../extensions/index.js');
 
+/**
+ * Implement class VigenereCipheringMachine that allows us to create
+ * direct and reverse ciphering machines according to task description
+ * 
+ * @example
+ * 
+ * const directMachine = new VigenereCipheringMachine();
+ * 
+ * const reverseMachine = new VigenereCipheringMachine(false);
+ * 
+ * directMachine.encrypt('attack at dawn!', 'alphonse') => 'AEIHQX SX DLLU!'
+ * 
+ * directMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => 'ATTACK AT DAWN!'
+ * 
+ * reverseMachine.encrypt('attack at dawn!', 'alphonse') => '!ULLD XS XQHIEA'
+ * 
+ * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
+ * 
+ */
 class VigenereCipheringMachine {
   constructor(mode) {
-    if (mode | (mode === undefined)) {
-      this.mode = true;
-    } else {
-      this.mode = false;
-    }
-    this.alphabet = [
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "O",
-      "P",
-      "Q",
-      "R",
-      "S",
-      "T",
-      "U",
-      "V",
-      "W",
-      "X",
-      "Y",
-      "Z",
-    ];
+    this.alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    this.mode = mode || mode === undefined;
   }
 
-  encrypt(string, key) {
-    if ((string.length == 0) | (key.length == 0)) throw new Error();
-    let result = string.toUpperCase().split("");
-    key = key.toUpperCase().repeat(25).split("");
+  encrypt(message, key) {
+    if (!message || !key)
+      throw new Error('Incorrect arguments!');
 
-    for (let i = 0; i < result.length; i++) {
-      if (this.alphabet.includes(result[i])) {
-        result[i] = this.alphabet[
-          (this.alphabet.indexOf(result[i]) + this.alphabet.indexOf(key[i])) % 26
-        ];
-      } else {
-        key.splice(i, 0, " ");
+    let currentKeyIndex = 0;
+    let result = "";
+
+    for (let i = 0; i < message.length; i++) {
+      if (!this.alphabet.includes(message[i].toUpperCase())) {
+        result += message[i];
+        continue;
       }
+      const codeMessage = this.alphabet.indexOf(message[i].toUpperCase());
+      const codeKey = this.alphabet.indexOf(key[currentKeyIndex++ % key.length].toUpperCase());
+      const encryptCode = (codeMessage + codeKey) % this.alphabet.length;
+      result += this.alphabet[encryptCode];
     }
-    if (!this.mode) result.reverse();
-    return result.join("");
+    return this.mode ? result : result.split('').reverse().join('');
   }
 
-  decrypt(string, key) {
-    if ((string.length == 0) | (key.length == 0))  throw new Error()
-    let r = string.toUpperCase().split("");
-    key = key.toUpperCase().repeat(25).split("");
-    for (let i = 0; i < r.length; i++) {
-      if (this.alphabet.includes(r[i])) {
-        r[i] = this.alphabet[
-          (this.alphabet.indexOf(r[i]) + 26 - this.alphabet.indexOf(key[i])) %
-            26
-        ];
-      } else {
-        key.splice(i, 0, " ");
+  decrypt(message, key) {
+    if (!message || !key) throw new Error('Incorrect arguments!');
+
+    let currentKeyIndex = 0;
+    let result = "";
+
+    for (let i = 0; i < message.length; i++) {
+      if (!this.alphabet.includes(message[i].toUpperCase())) {
+        result += message[i];
+        continue;
       }
+
+      const codeMessage = this.alphabet.indexOf(message[i].toUpperCase());
+      const codeKey = this.alphabet.indexOf(key[currentKeyIndex++ % key.length].toUpperCase());
+      const decryptCode = codeMessage - codeKey % this.alphabet.length;
+
+      if (decryptCode < 0)
+        result += this.alphabet[this.alphabet.length + decryptCode];
+      else
+        result += this.alphabet[decryptCode];
     }
-    if (!this.mode) {
-      return r.reverse().join("");
-    }
-    return r.join("");
+    return this.mode ? result : result.split('').reverse().join('');
   }
 }
 
-module.exports = VigenereCipheringMachine;
+module.exports = {
+  VigenereCipheringMachine
+};

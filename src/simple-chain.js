@@ -1,42 +1,40 @@
-const CustomError = require("../extensions/custom-error");
+const { NotImplementedError } = require('../extensions/index.js');
 
-const chainMaker = {
-  arrChain: [],
+/**
+ * Implement chainMaker object according to task description
+ * 
+ */
+ const chainMaker = {
+  chain: [],
   getLength() {
-    return arrChain.length;
+    return this.chain.length;
   },
   addLink(value) {
-    if(typeof(value) === 'undefined'){
-      this.arrChain.push(' ');
-    }else{
-      this.arrChain.push(String(value));
-    }
+    this.chain.push(`( ${value} )`);
     return this;
   },
   removeLink(position) {
-    if(typeof(position) === 'number' && position % 1 === 0)
-      this.arrChain.splice(position - 1, 1);
-    else{
-      this.arrChain = [];
-      throw new Error();
+    const index = position - 1;
+    if (this.chain[index] === undefined) {
+      this.chain = [];
+      throw new Error("You can't remove incorrect link!");
     }
+    this.chain.splice(index, 1);
     return this;
   },
   reverseChain() {
-    this.arrChain.reverse();
+    this.chain.reverse();
     return this;
   },
   finishChain() {
-    let resultStr = '';
-    for(let i = 0; i <  this.arrChain.length; i++){
-      resultStr += '( ' + this.arrChain[i] + ' )';
-      if(i !== this.arrChain.length - 1){
-        resultStr += '~~';
-      }
-    }
-    this.arrChain = [];
-    return resultStr;
-  }
+    const result = this.chain.join('~~');
+    this.chain = [];
+    return result;
+  },
 };
 
-module.exports = chainMaker;
+module.exports = {
+  chainMaker
+};
+
+// throw new Error("You can't remove incorrect link!");

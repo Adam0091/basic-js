@@ -1,6 +1,21 @@
-const CustomError = require("../extensions/custom-error");
+const { NotImplementedError } = require('../extensions/index.js');
 
-module.exports = function repeater( str, options) {
+/**
+ * Create a repeating string based on the given parameters
+ *  
+ * @param {String} str string to repeat
+ * @param {Object} options options object 
+ * @return {String} repeating string
+ * 
+ *
+ * @example
+ * 
+ * repeater('STRING', { repeatTimes: 3, separator: '**', 
+ * addition: 'PLUS', additionRepeatTimes: 3, additionSeparator: '00' })
+ * => 'STRINGPLUS00PLUS00PLUS**STRINGPLUS00PLUS00PLUS**STRINGPLUS00PLUS00PLUS'
+ *
+ */
+function repeater(str, options) {
   if(typeof(options.repeatTimes) !== 'number' || options.repeatTimes % 1 !== 0) options.repeatTimes = 1;
   if(typeof(options.additionRepeatTimes) !== 'number' || options.additionRepeatTimes % 1 !== 0) options.additionRepeatTimes = 1;
   if(!options.separator) options.separator = '+';
@@ -25,6 +40,9 @@ module.exports = function repeater( str, options) {
     }
   }
 
-  return resultStr
+  return resultStr;
+}
+
+module.exports = {
+  repeater
 };
-  
